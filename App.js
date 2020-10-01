@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Alert } from 'react-native';
 import { Navbar } from './src/components/Navbar';
 import { MainScreen } from './src/screens/MainScreen';
 import { TodoScreen } from './src/screens/TodoScreen';
@@ -27,9 +27,28 @@ export default function App() {
     };
 
     const removeTodo = (id) => {
-        setTodos((prev) => {
-            return prev.filter((item) => item.id !== id);
-        });
+        const itemTodo = todos.find((item) => item.id === id);
+        Alert.alert(
+            'Remove item',
+            `Are you sure to delete "${itemTodo.title}"?`,
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Remove',
+                    style: 'destructive',
+                    onPress: () => {
+                        setTodoId(null);
+                        setTodos((prev) => {
+                            return prev.filter((item) => item.id !== id);
+                        });
+                    },
+                },
+            ],
+            { cancelable: false }
+        );
     };
 
     const openTodo = (id) => {
@@ -46,14 +65,17 @@ export default function App() {
     );
 
     const openFlatList = () => {
-        console.log(' Log');
         setTodoId('flatlist');
     };
 
     if (todoId && todoId !== 'flatlist') {
         const currentTodo = todos.find((item) => item.id === todoId);
         content = (
-            <TodoScreen todo={currentTodo} goBack={() => setTodoId(null)} />
+            <TodoScreen
+                todo={currentTodo}
+                onRemove={removeTodo}
+                goBack={() => setTodoId(null)}
+            />
         );
     } else if (todoId === 'flatlist') {
         content = <FlatListScreen />;

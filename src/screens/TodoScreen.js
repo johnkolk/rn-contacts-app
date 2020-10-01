@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Text, Button } from 'react-native';
 import { AppCard } from '../components/UI/AppCard';
+import { EditModal } from '../components/EditModal';
 import { THEME } from '../theme';
 
-export const TodoScreen = ({ goBack, todo }) => {
+export const TodoScreen = ({ goBack, todo, onRemove }) => {
+    const [modalVisible, setModalVisible] = useState(false);
+
     return (
         <View>
             <AppCard style={styles.card}>
                 <Text style={styles.text}>Title: {todo.title}</Text>
-                <Button title="Edit" />
+                <Button onPress={() => setModalVisible(true)} title="Edit" />
             </AppCard>
 
             <View style={styles.btnContainer}>
@@ -19,10 +22,16 @@ export const TodoScreen = ({ goBack, todo }) => {
                     <Button
                         title="Delete"
                         color={THEME.DANGER_COLOR}
-                        onPress={() => console.log('Remove')}
+                        onPress={() => onRemove(todo.id)}
                     />
                 </View>
             </View>
+
+            <EditModal
+                value={todo.title}
+                modalVisible={modalVisible}
+                closeModal={() => setModalVisible(false)}
+            />
         </View>
     );
 };
@@ -35,7 +44,8 @@ const styles = StyleSheet.create({
     card: {
         marginBottom: 20,
         padding: 15,
-        backgroundColor: THEME.DANGER_COLOR,
+        height: 300,
+        backgroundColor: THEME.SECONDARY_COLOR,
     },
     button: {
         width: '45%',
